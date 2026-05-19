@@ -353,7 +353,7 @@ footer{
   <div class="nav-links">
     <a href="#pack">Pack Combo</a>
     <a href="#pourquoi">Notre vision</a>
-    <a href="#newsletter">Newsletter</a>
+    <a href="#newsletter" style="display:none">Newsletter</a>
   </div>
   <a href="#pack" class="nav-cta" style="display:none">🛒 Commander</a>
 </nav>
@@ -394,8 +394,8 @@ footer{
       <h2>CarPlay 5" +<br><em>Fuse Box</em> 4 canaux</h2>
       <p>Le duo indispensable pour transformer ton guidon. Navigation intuitive et alimentation propre — ensemble, moins cher.</p>
       <div class="pack-price-row">
-        <span class="pack-price">99,90 €</span>
-        <span style="font-size:13px;color:#6e6a65;margin-left:4px">+ 12,90 € de port</span>
+        <span class="pack-price">109,90 €</span>
+        <span style="font-size:13px;color:#6e6a65;margin-left:4px">Frais de port inclus</span>
       </div>
       <ul class="pack-includes">
         <li>Écran CarPlay &amp; Android Auto 5 pouces</li>
@@ -403,7 +403,7 @@ footer{
         <li>Support guidon universel inclus</li>
         <li>Câble d'alimentation &amp; câble USB</li>
       </ul>
-      <a href="#" class="btn-pack" onclick="openPayment(event,'Pack Combo CarPlay + Fuse Box','99.90')">🛒 Commander — 99,90 €</a>
+      <a href="#" class="btn-pack" onclick="openPayment(event,'Pack Combo CarPlay + Fuse Box','109.90')">🛒 Commander — 109,90 €</a>
     </div>
     <div class="pack-images">
       <div class="pack-img-card">
@@ -469,7 +469,7 @@ footer{
         </ul>
         <div class="product-price-row">
           <span class="price-amount">69,90 €</span>
-          <span class="price-sub">+ frais de port</span>
+          <span class="price-sub">Port inclus</span>
         </div>
         <button class="btn-card" onclick="openPayment(event,'CarPlay 5 pouces Zumio Connect','69.90')">🛒 Commander — 69,90 €</button>
       </div>
@@ -492,7 +492,7 @@ footer{
         </ul>
         <div class="product-price-row">
           <span class="price-amount">34,90 €</span>
-          <span class="price-sub">+ frais de port</span>
+          <span class="price-sub">Port inclus</span>
         </div>
         <button class="btn-card" onclick="openPayment(event,'Fuse Box 4 Canaux Zumio Charge','34.90')">🛒 Commander — 34,90 €</button>
       </div>
@@ -525,28 +525,10 @@ footer{
       <h3>Résistant aux intempéries</h3>
       <p>Pluie, poussière, vibrations — nos équipements sont faits pour durer des saisons.</p>
     </div>
-    <div class="why-item">
-      <div class="why-icon">📦</div>
-      <h3>Livraison offerte</h3>
-      <p>Livraison gratuite en France métropolitaine. Expédition sous 24-48h.</p>
-    </div>
   </div>
 </section>
 
 <div class="divider"></div>
-
-<!-- NEWSLETTER -->
-<section class="newsletter" id="newsletter">
-  <div class="newsletter-inner">
-    <h2>Reste dans la <em>boucle</em></h2>
-    <p>Nouveaux produits, offres exclusives, conseils moto — directement dans ta boîte mail.</p>
-    <form class="newsletter-form" onsubmit="handleSubmit(event)">
-      <input type="email" placeholder="ton@email.com" required>
-      <button type="submit">S'inscrire</button>
-    </form>
-    <p class="newsletter-legal">Pas de spam. Désabonnement en un clic.</p>
-  </div>
-</section>
 
 <!-- FOOTER -->
 <footer>
@@ -639,14 +621,14 @@ footer{
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
           <div>
             <div id="recap-title" style="font-size:14px;font-weight:800;color:#fff;text-transform:uppercase"></div>
-            <div style="font-size:11px;color:#6e6a65;margin-top:2px">+ 12,90 € de frais de port · France métropolitaine</div>
+            <div style="font-size:11px;color:#6e6a65;margin-top:2px">Frais de port inclus</div>
           </div>
           <div id="recap-price" style="font-size:20px;font-weight:900;color:#ff5e00"></div>
         </div>
         <div style="height:1px;background:rgba(255,255,255,.06);margin-bottom:10px"></div>
         <div style="display:flex;flex-direction:column;gap:5px">
           <div style="display:flex;justify-content:space-between;font-size:12px;color:#8a8480"><span>Sous-total</span><span id="recap-sub"></span></div>
-          <div style="display:flex;justify-content:space-between;font-size:12px;color:#8a8480"><span>Livraison</span><span style="font-weight:700">12,90 €</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:#8a8480"><span>Livraison</span><span style="font-weight:700">Incluse</span></div>
           <div style="height:1px;background:rgba(255,255,255,.06);margin:4px 0"></div>
           <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:800;color:#fff"><span>Total</span><span id="recap-total"></span></div>
         </div>
@@ -784,7 +766,7 @@ footer{
         </div>
         <div style="height:1px;background:rgba(255,94,0,.15);margin-bottom:10px"></div>
         <div style="display:flex;justify-content:space-between;font-size:12px;color:#a09890;margin-bottom:6px"><span>Sous-total produit</span><span id="pay3-sub2"></span></div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;color:#a09890;margin-bottom:8px"><span>Frais de transport</span><span style="font-weight:700;color:#ede9e5">12,90 €</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:#a09890;margin-bottom:8px"><span>Frais de transport</span><span style="font-weight:700;color:#ede9e5">Inclus</span></div>
         <div style="height:1px;background:rgba(255,94,0,.15);margin-bottom:8px"></div>
         <div style="display:flex;justify-content:space-between;align-items:baseline">
           <span style="font-size:12px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.06em">Total à payer</span>
@@ -839,7 +821,7 @@ const EMAILJS_CONFIRM_ID  = 'template_9l14m8y';
 
 function sendOrderEmail(produit, montant, prenom, nom, email_client, tel, adresse, cp, ville) {
   const montant_produit = montant;
-  const montant_total   = (parseFloat(montant) + 12.90).toFixed(2).replace('.', ',');
+  const montant_total   = parseFloat(montant).toFixed(2).replace('.', ',');
 
   // Email de notification → toi
   emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
@@ -869,7 +851,7 @@ function openPayment(e, title, price) {
   document.getElementById('recap-title').textContent = title;
   document.getElementById('recap-price').textContent = price.replace('.',',') + ' €';
   document.getElementById('recap-sub').textContent = price.replace('.',',') + ' €';
-  const total = (parseFloat(price) + 12.90).toFixed(2).replace('.',',');
+  const total = parseFloat(price).toFixed(2).replace('.',',');
   document.getElementById('recap-total').textContent = total + ' €';
 
   goStep(1);
@@ -929,8 +911,8 @@ function validateAddress() {
      <span style="color:#ff5e00">${emailVal}</span>`;
 
   const prixProduit = parseFloat(currentPrice);
-  const transport = 12.90;
-  const totalFinal = (prixProduit + transport).toFixed(2);
+  const transport = 0;
+  const totalFinal = prixProduit.toFixed(2);
 
   document.getElementById('pay3-title').textContent = currentTitle;
   document.getElementById('pay3-sub').textContent = currentPrice.replace('.',',') + ' €';
@@ -970,7 +952,7 @@ const LEGAL = {
       <p>Les présentes CGV régissent les ventes de produits réalisées via le site zumio.fr entre Zum io (vendeur) et tout acheteur (client).</p>
 
       <h4 style="color:#ff5e00;margin:20px 0 8px;font-size:12px;letter-spacing:.15em;text-transform:uppercase">2. Produits</h4>
-      <p>Les produits proposés sont des accessoires pour motocycles (écrans CarPlay, répartiteurs de puissance, etc.). Les prix sont indiqués en euros TTC. Les frais de port sont à la charge du client (12,90 € en France métropolitaine).</p>
+      <p>Les produits proposés sont des accessoires pour motocycles (écrans CarPlay, répartiteurs de puissance, etc.). Les prix sont indiqués en euros TTC. Les frais de port sont inclus dans le prix affiché.</p>
 
       <h4 style="color:#ff5e00;margin:20px 0 8px;font-size:12px;letter-spacing:.15em;text-transform:uppercase">3. Commande & Paiement</h4>
       <p>La commande est validée après paiement via PayPal. Le client reçoit une confirmation par email. Le paiement est sécurisé par PayPal.</p>

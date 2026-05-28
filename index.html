@@ -45,6 +45,8 @@
     onSnapshot(ref, (snap) => {
       if (!snap.exists()) return;
       const qty = snap.data().stock;
+      if (!window._stockCache) window._stockCache = {};
+      window._stockCache[produitId] = qty;
       applyStockUI(qty, btnEl, badgeEl);
     });
   }
@@ -1007,8 +1009,16 @@ const PAYPAL = 'https://www.paypal.me/Zumio13';
 let currentPrice = '';
 let currentTitle = '';
 
-function openPayment(e, title, price) {
+async function openPayment(e, title, price) {
   e.preventDefault();
+  // Bloquer si rupture de stock
+  if (window._stockCache && window._stockCache["pack-combo"] <= 0) {
+    alert("❌ Ce produit est en rupture de stock.");
+    return;
+  }
+  // Bloquer si bouton désactivé
+  const btn = e.currentTarget || e.target;
+  if (btn && btn.disabled) return;
   currentTitle = title;
   currentPrice = price;
 
@@ -1292,4 +1302,3 @@ function handleSubmit(e){
 </script>
 </body>
 </html>
-

@@ -5,6 +5,171 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zumio – Ride Smarter</title>
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;0,900;1,400&display=swap" rel="stylesheet">
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, doc, getDoc, setDoc, onSnapshot, runTransaction } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  // ── FIREBASE CONFIG ── projet zumio-shop
+  const firebaseConfig = {
+    apiKey: "AIzaSyAMQ_Jip3oJJA8OloA0cBu0hyCsjxhwmMs",
+    authDomain: "zumio-shop.firebaseapp.com",
+    projectId: "zumio-shop",
+    storageBucket: "zumio-shop.firebasestorage.app",
+    messagingSenderId: "100903280829",
+    appId: "1:100903280829:web:d6f90b4d53e124006157d4"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  // ── PRODUITS SUIVIS (id → quantité initiale) ──
+  const PRODUITS = {
+    'pack-combo': { label: 'Pack Combo CarPlay + Fuse Box', stock: 5 }
+  };
+
+  // ── INIT STOCK (créer doc si inexistant) ──
+  async function initStock() {
+    for (const [id, info] of Object.entries(PRODUITS)) {
+      const ref = doc(db, 'stock', id);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, { stock: info.stock, label: info.label });
+      }
+    }
+  }
+
+  // ── ÉCOUTE TEMPS RÉEL → met à jour les boutons ──
+  function watchStock(produitId, btnEl, badgeEl) {
+    const ref = doc(db, 'stock', produitId);
+    onSnapshot(ref, (snap) => {
+      if (!snap.exists()) return;
+      const qty = snap.data().stock;
+      applyStockUI(qty, btnEl, badgeEl);
+    });
+  }
+
+  function applyStockUI(qty, btnEl, badgeEl) {
+    if (qty <= 0) {
+      btnEl.disabled = true;
+      btnEl.textContent = '❌ Rupture de stock';
+      btnEl.style.background = '#2a2a2a';
+      btnEl.style.color = '#6e6a65';
+      btnEl.style.cursor = 'not-allowed';
+      btnEl.style.boxShadow = 'none';
+      if (badgeEl) {
+        badgeEl.textContent = 'RUPTURE';
+        badgeEl.style.background = '#c0392b';
+      }
+    } else {
+      btnEl.disabled = false;
+      if (qty <= 2) {
+        const txt = btnEl.getAttribute('data-original-text') || btnEl.textContent;
+        btnEl.setAttribute('data-original-text', txt);
+        if (badgeEl) {
+          badgeEl.textContent = `Plus que ${qty} !`;
+          badgeEl.style.background = '#e67e22';
+        }
+      }
+    }
+  }
+
+  // ── DÉCRÉMENTE STOCK à la commande ──
+  window.decrementStock = async function(produitId) {
+    const ref = doc(db, 'stock', produitId);
+    try {
+      await runTransaction(db, async (tx) => {
+        const snap = await tx.get(ref);
+        if (!snap.exists()) throw new Error('Produit introuvable');
+        const qty = snap.data().stock;
+        if (qty <= 0) throw new Error('Rupture de stock');
+        tx.update(ref, { stock: qty - 1 });
+      });
+      return true;
+    } catch (e) {
+      console.warn('decrementStock:', e.message);
+      return false;
+    }
+  };
+
+  // ── PANEL ADMIN (URL ?admin=zumio ou #admin) ──
+  window.isAdmin = () => {
+    const url = new URLSearchParams(window.location.search);
+    return url.get('admin') === 'zumio' || window.location.hash === '#admin';
+  };
+
+  window.setStock = async function(produitId, qty) {
+    const ref = doc(db, 'stock', produitId);
+    await setDoc(ref, { stock: parseInt(qty), label: PRODUITS[produitId]?.label || produitId }, { merge: true });
+    console.log(`Stock ${produitId} → ${qty}`);
+  };
+
+  // ── DÉMARRAGE ──
+  window.addEventListener('DOMContentLoaded', async () => {
+    await initStock();
+
+    // Bouton Pack Combo (principal)
+    const btnPack = document.querySelector('.btn-pack');
+    const badgePack = document.querySelector('.pack-tag');
+    if (btnPack) {
+      btnPack.setAttribute('data-produit', 'pack-combo');
+      watchStock('pack-combo', btnPack, badgePack);
+    }
+
+    // Panel admin
+    if (window.isAdmin()) {
+      renderAdminPanel();
+    }
+  });
+
+  function renderAdminPanel() {
+    const panel = document.createElement('div');
+    panel.id = 'admin-panel';
+    panel.innerHTML = `
+      <div style="
+        position:fixed;bottom:20px;right:20px;z-index:9999;
+        background:#111113;border:2px solid #ff5e00;border-radius:16px;
+        padding:20px 24px;min-width:280px;
+        font-family:'Exo 2',sans-serif;
+        box-shadow:0 8px 40px rgba(255,94,0,.3);
+      ">
+        <div style="font-size:10px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#ff5e00;margin-bottom:12px">
+          🔧 Admin Stock
+        </div>
+        <div id="admin-rows"></div>
+        <div style="font-size:10px;color:#6e6a65;margin-top:10px">
+          Accès : ?admin=zumio
+        </div>
+      </div>
+    `;
+    document.body.appendChild(panel);
+
+    for (const [id, info] of Object.entries(PRODUITS)) {
+      const ref = doc(db, 'stock', id);
+      onSnapshot(ref, (snap) => {
+        const qty = snap.exists() ? snap.data().stock : 0;
+        let row = document.getElementById('admin-row-' + id);
+        if (!row) {
+          row = document.createElement('div');
+          row.id = 'admin-row-' + id;
+          row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:10px';
+          document.getElementById('admin-rows').appendChild(row);
+        }
+        row.innerHTML = `
+          <span style="font-size:12px;color:#ede9e5;flex:1">${info.label}</span>
+          <input type="number" min="0" value="${qty}" style="
+            width:60px;background:rgba(255,255,255,.08);border:1px solid rgba(255,94,0,.3);
+            color:#fff;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;
+            padding:5px 8px;border-radius:6px;text-align:center;
+          " onchange="window.setStock('${id}', this.value)">
+          <span style="font-size:11px;color:${qty > 0 ? '#22c55e' : '#c0392b'};font-weight:700">
+            ${qty > 0 ? '✓' : '✗'}
+          </span>
+        `;
+      });
+    }
+  }
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -875,7 +1040,7 @@ function goStep(n) {
   document.getElementById('pay-modal').scrollTop = 0;
 }
 
-function validateAddress() {
+async function validateAddress() {
   const fields = ['f-prenom','f-nom','f-email','f-adresse','f-cp','f-ville'];
   const errEl = document.getElementById('form-error');
   for(const id of fields) {
@@ -891,6 +1056,22 @@ function validateAddress() {
     errEl.style.display = 'block';
     return;
   }
+
+  // ── Vérification & décrémentation du stock ──
+  const btnStep2 = document.querySelector('#step-2 button[onclick*="goStep(3)"], #step-2 button[onclick*="validateAddress"]');
+  if (typeof window.decrementStock === 'function') {
+    const produitId = document.querySelector('[data-produit]')?.getAttribute('data-produit') || 'pack-combo';
+    if (btnStep2) { btnStep2.disabled = true; btnStep2.textContent = 'Vérification…'; }
+    const ok = await window.decrementStock(produitId);
+    if (!ok) {
+      if (btnStep2) { btnStep2.disabled = false; btnStep2.textContent = 'Continuer → Paiement'; }
+      errEl.textContent = '❌ Ce produit est en rupture de stock. Merci de réessayer plus tard.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (btnStep2) { btnStep2.disabled = false; btnStep2.textContent = 'Continuer → Paiement'; }
+  }
+
   errEl.style.display = 'none';
 
   // Fill step 3
@@ -1111,3 +1292,4 @@ function handleSubmit(e){
 </script>
 </body>
 </html>
+
